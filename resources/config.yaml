@@ -14,3 +14,15 @@ parser:
       index: 2
     message: 
       index: 3
+  
+  # root log directory
+  log-dir: "resources"
+      
+db: 
+  type: mongo
+  mongo:
+    host: 127.0.0.1
+    port: 27017
+    db: treehunter
+    
+    
