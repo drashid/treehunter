@@ -1,6 +1,6 @@
 (ns treehunter.parser)
 
-(def line-regex (re-pattern #"^([0-9]{1,2}\s+[A-Za-z]+\s+[0-9]{4})\s+([0-9.:,]+)\s+(\[[A-Z]+\])\s+(.*)$"))
+(def line-regex (re-pattern #"^([0-9]{1,2}\s+[A-Za-z]+\s+[0-9]{4})\s+([0-9.:,]+)\s+\[([A-Z]+)\]\s+.*?((?:com|org|net)[a-zA-Z.0-9]+):\s*(.*)$"))
 
 (defn read-file [filename] 
   (with-open [rdr (clojure.java.io/reader filename)]
@@ -8,10 +8,20 @@
      (group-seq (map parse-line lines) #(not (:matched %))))))
 
 (defn parse-line [line]
-  (let [parsed (re-matches line-regex line)]
-    {:matched (not (nil? parsed))
-     :parsed (rest parsed)
-     :text line}))
+  (let [parsed (re-matches line-regex line)
+        result {:matched (not (nil? parsed))}]
+    (if (:matched result)
+      (assoc result :parsed (rest parsed))
+      (assoc result :body line))))
+
+(defn merge-log-groups [group]
+  (let [primary (:parsed (first group))]
+    {:date (nth primary 0)
+     :time (nth primary 1)
+     :type (nth primary 2)
+     :class (nth primary 3)
+     :message (reduce #(str %1 "\n" (:body %2)) (nth primary 4) (rest group))}
+    ))
 
 (defn group-seq 
   ([lst group-with-prev?]
@@ -31,5 +41,5 @@
 (let [log (clojure.string/split (slurp "resources/small-sample-log") #"[\n\r]+")]
   (map #(count %) (group-seq (map parse-line log) #(not (:matched %)))))
 
-(let [log (clojure.string/split (slurp "resources/small-sample-log") #"[\n\r]+")]
-  (group-seq (map parse-line log) #(not (:matched %))))
+(println (let [log (clojure.string/split (slurp "resources/small-sample-log") #"[\n\r]+")]
+  (map merge-log-groups (group-seq (map parse-line log) #(not (:matched %))))))
