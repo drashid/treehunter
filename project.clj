@@ -3,7 +3,8 @@
   :url "http://example.com/FIXME"
   :dependencies [[org.clojure/clojure "1.4.0"]
                  [compojure "1.1.5"]
-                 [ring/ring-json "0.2.0"]]
+                 [ring/ring-json "0.2.0"]
+                 [clojurewerkz/quartzite "1.0.1"]]
   :plugins [[lein-ring "0.8.2"]]
   :ring {:handler treehunter.handler/app}
   :profiles

@@ -1,4 +1,28 @@
-(ns treehunter.parser)
+(ns treehunter.parser
+  (:use [clojurewerkz.quartzite.jobs :only [defjob]])
+  (:require [clojurewerkz.quartzite.scheduler :as qs])
+  (:import [java.io File]))
+
+;;
+;; Recurring job to search for and parse new logs
+;;
+
+(def ^:private log-dir (ref "resources"))
+
+(defn set-log-dir! [dir]
+  (dosync (ref-set resources-dir dir)))
+
+(defjob scan-job [ctx]
+  (println (files-under @log-dir)))
+
+(defn- files-under 
+  "Return the list of files under the given directory path"
+  [^String dir]
+  (filter #(.isFile %)(-> dir File. file-seq)))
+
+;;
+;; File parsing
+;;
 
 (def line-regex (re-pattern #"^([0-9]{1,2}\s+[A-Za-z]+\s+[0-9]{4})\s+([0-9.:,]+)\s+\[([A-Z]+)\]\s+.*?((?:com|org|net)[a-zA-Z.0-9]+):\s*(.*)$"))
 
@@ -37,6 +61,10 @@
            (drop (count grouped) (rest lst))
            group-with-prev?
            (conj agg (cons next grouped)))))))
+
+
+
+;; TESTING CODE
 
 (defn -main [& args]
   (println (read-log-file "resources/sample-log")))

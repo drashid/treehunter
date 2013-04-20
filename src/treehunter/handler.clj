@@ -5,6 +5,8 @@
             [compojure.route :as route]
             [ring.middleware.json :as json-middleware]))
 
+(set! *warn-on-reflection* true)
+
 (defroutes api-routes 
   (GET "/" [] (response {:hello "Hello World"})))
 
@@ -18,3 +20,7 @@
     (-> app-routes 
         json-middleware/wrap-json-response
         json-middleware/wrap-json-body)))
+
+(defn -main [& args]
+  
+  )
