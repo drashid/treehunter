@@ -18,17 +18,18 @@
     (group-seq lst group-with-prev? []))
   ([lst group-with-prev? agg]
      (if (empty? lst)
+       ;; base case, no more elements to consume
        agg
        ;; recursively continue grouping
-       (group-seq 
-         ;; rest we haven't taken
-         (drop-while #(group-with-prev? %) (rest lst))
-         ;; pass through function
-         group-with-prev?
-         ;; append to our collection the next group
-         (conj agg
-           (flatten [(first lst) (take-while #(group-with-prev? %) (rest lst))]))))))
-
+       (let [next (first lst)
+             grouped (take-while #(group-with-prev? %) (rest lst))]
+         (recur
+           (drop (count grouped) (rest lst))
+           group-with-prev?
+           (conj agg (cons next grouped)))))))
 
 (let [log (clojure.string/split (slurp "resources/small-sample-log") #"[\n\r]+")]
   (map #(count %) (group-seq (map parse-line log) #(not (:matched %)))))
+
+(let [log (clojure.string/split (slurp "resources/small-sample-log") #"[\n\r]+")]
+  (group-seq (map parse-line log) #(not (:matched %))))
