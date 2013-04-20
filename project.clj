@@ -4,7 +4,9 @@
   :dependencies [[org.clojure/clojure "1.4.0"]
                  [compojure "1.1.5"]
                  [ring/ring-json "0.2.0"]
-                 [clojurewerkz/quartzite "1.0.1"]]
+                 [clojurewerkz/quartzite "1.0.1"]
+                 [clj-yaml "0.4.0"]
+                 [clj-time "0.5.0"]]
   :plugins [[lein-ring "0.8.2"]]
   :ring {:handler treehunter.handler/app}
   :profiles

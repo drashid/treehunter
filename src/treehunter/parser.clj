@@ -1,6 +1,8 @@
 (ns treehunter.parser
   (:use [clojurewerkz.quartzite.jobs :only [defjob]])
-  (:require [clojurewerkz.quartzite.scheduler :as qs])
+  (:require [clojurewerkz.quartzite.scheduler :as qs]
+            [treehunter.config :as conf]
+            [clj-time.format :as time])
   (:import [java.io File]))
 
 ;;
@@ -16,7 +18,7 @@
   (println (files-under @log-dir)))
 
 (defn- files-under 
-  "Return the list of files under the given directory path"
+  "Return the list of files under the given directory path."
   [^String dir]
   (filter #(.isFile %)(-> dir File. file-seq)))
 
@@ -24,7 +26,9 @@
 ;; File parsing
 ;;
 
-(def line-regex (re-pattern #"^([0-9]{1,2}\s+[A-Za-z]+\s+[0-9]{4})\s+([0-9.:,]+)\s+\[([A-Z]+)\]\s+.*?((?:com|org|net)[a-zA-Z.0-9]+):\s*(.*)$"))
+(def line-regex (re-pattern (conf/parser :regex)))
+
+(def date-formatter (time/formatter (conf/path conf/parser :fields :datetime :format)))
 
 (defn read-log-file [filename] 
   (with-open [rdr (clojure.java.io/reader filename)]
@@ -39,13 +43,16 @@
       (assoc result :body line))))
 
 (defn- parse-log-groups [group]
-  (let [primary (:parsed (first group))]
-    {:date (nth primary 0)
-     :time (nth primary 1)
-     :type (nth primary 2)
-     :class (nth primary 3)
-     :message (reduce #(str %1 "\n" (:body %2)) (nth primary 4) (rest group))}
-    ))
+  (let [primary (:parsed (first group))
+        fields (conf/parser :fields)]
+    {:datetime (time/parse date-formatter (nth primary (conf/path fields :datetime :index)))
+     :type (nth primary (conf/path fields :type :index))
+     :class (nth primary (conf/path fields :class :index))
+     :message (reduce 
+               #(str %1 "\n" (:body %2)) 
+               (nth primary (conf/path fields :message :index)) 
+               (rest group))
+     }))
 
 (defn- group-seq 
   ([lst group-with-prev?]
