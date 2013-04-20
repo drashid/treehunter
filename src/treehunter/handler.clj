@@ -5,8 +5,11 @@
             [compojure.route :as route]
             [ring.middleware.json :as json-middleware]))
 
+(defroutes api-routes 
+  (GET "/" [] (response {:hello "Hello World"})))
+
 (defroutes app-routes
-  (GET "/" [] (response {:hello "Hello World"}))
+  (context "/api" [] api-routes)
   (route/resources "/")
   (route/not-found "Not Found"))
 
