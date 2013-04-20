@@ -2,19 +2,19 @@
 
 (def line-regex (re-pattern #"^([0-9]{1,2}\s+[A-Za-z]+\s+[0-9]{4})\s+([0-9.:,]+)\s+\[([A-Z]+)\]\s+.*?((?:com|org|net)[a-zA-Z.0-9]+):\s*(.*)$"))
 
-(defn read-file [filename] 
+(defn read-log-file [filename] 
   (with-open [rdr (clojure.java.io/reader filename)]
    (let [lines (line-seq rdr)]
-     (group-seq (map parse-line lines) #(not (:matched %))))))
+     (map parse-log-groups (group-seq (map parse-line lines) #(not (:matched %)))))))
 
-(defn parse-line [line]
+(defn- parse-line [line]
   (let [parsed (re-matches line-regex line)
         result {:matched (not (nil? parsed))}]
     (if (:matched result)
       (assoc result :parsed (rest parsed))
       (assoc result :body line))))
 
-(defn merge-log-groups [group]
+(defn- parse-log-groups [group]
   (let [primary (:parsed (first group))]
     {:date (nth primary 0)
      :time (nth primary 1)
@@ -23,7 +23,7 @@
      :message (reduce #(str %1 "\n" (:body %2)) (nth primary 4) (rest group))}
     ))
 
-(defn group-seq 
+(defn- group-seq 
   ([lst group-with-prev?]
     (group-seq lst group-with-prev? []))
   ([lst group-with-prev? agg]
@@ -38,8 +38,7 @@
            group-with-prev?
            (conj agg (cons next grouped)))))))
 
-(let [log (clojure.string/split (slurp "resources/small-sample-log") #"[\n\r]+")]
-  (map #(count %) (group-seq (map parse-line log) #(not (:matched %)))))
+(defn -main [& args]
+  (println (read-log-file "resources/sample-log")))
 
-(println (let [log (clojure.string/split (slurp "resources/small-sample-log") #"[\n\r]+")]
-  (map merge-log-groups (group-seq (map parse-line log) #(not (:matched %))))))
+(-main)
