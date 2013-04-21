@@ -20,15 +20,15 @@
 ;; DAO setup
 ;;
 
-(def ^:private dao (ref {}))
+(def ^:dynamic *dao* {})
 
 (defn db-init! [] 
   (let [db (case (:type conf/db)
               "mongo" (MongoDao.)
               (throw+ "Only 'mongo' is a valid Database type!"))]
     (do
-      (dosync (ref-set dao db))
-      (.init! @dao))))
+      (alter-var-root (var *dao*) (fn [_] (identity db)))
+      (.init! *dao*))))
 
 ;;
 ;; Recurring job to search for and parse new logs
@@ -46,9 +46,9 @@
     (println "Scanning files under directory " log-dir)
     (try
      (dorun 
-      (map #(if (.file-processing-started? @dao %)               
+      (map #(if (.file-processing-started? *dao* %)               
               (println (str "Skipping " %))
-              (parser/process-file-to-db % @dao))
+              (parser/process-file-to-db *dao* %))
            files))
      (catch Exception e
        (println "EXCEPTION PROCESSING LOGS: " (.getMessage e))

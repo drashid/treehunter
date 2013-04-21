@@ -15,7 +15,10 @@
   
   ;; log lookup
   
-  )
-  
-  
+)
 
+(defn file-processing-started? [dao filename] (.file-processing-started? dao filename))
+
+(defn set-file-status! [dao filename status] (.set-file-status! dao filename status))
+
+(defn insert-logs! [dao item-list] (.insert-logs! dao item-list))

@@ -4,7 +4,8 @@
   (:require [clojurewerkz.quartzite.scheduler :as qs]
             [treehunter.config :as conf]
             [clj-time.format :as time]
-            [clojure.java.io :as io])
+            [clojure.java.io :as io]
+            [treehunter.db :as db])
   (:import [java.io File]
            [treehunter.db LogDao]))
 
@@ -58,7 +59,7 @@
                           (repeatedly #(rest (re-find exception-matcher))))))
      }))
 
-(defn process-file-to-db [filename ^LogDao dao]
+(defn process-file-to-db [^LogDao dao filename]
   (println "Parsing file and contents to DB: " filename)
   (let [is (if (.endsWith filename ".gz")
              (java.util.zip.GZIPInputStream. (io/input-stream filename))
@@ -67,10 +68,10 @@
      (let [lines (line-seq rdr)
            log-entries (map parse-log-groups (group-seq (map parse-line lines) #(not (:matched %))))]
        (try+ 
-         (.set-file-status! dao filename :started)
-         (.insert-logs! dao log-entries)
-         (.set-file-status! dao filename :completed)
+         (db/set-file-status! dao filename :started)
+         (db/insert-logs! dao log-entries)
+         (db/set-file-status! dao filename :completed)
          (catch Object _
-           (.set-file-status! dao filename :failed)
+           (db/set-file-status! dao filename :failed)
            (throw+)))))))
 

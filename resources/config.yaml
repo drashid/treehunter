@@ -2,6 +2,8 @@ parser:
   # regex to parse a main log line 
   # if a line doesn't match this, it will be rolled up into the previous line body (such as a multi-line stack trace or message body)
   line-regex: ^([0-9]{1,2}\s+[A-Za-z]+\s+[0-9]{4}\s+[0-9.:,]+)\s+\[([A-Z]+)\]\s+.*?((?:com|org|net)[a-zA-Z.0-9]+):\s*(.*)$
+ 
+  # Used to extract exception class names like java.lang.RuntimeException, against the message of the log statement block
   exception-regex: (?:(?:[^\t]((?:com|org|net|java)[a-zA-Z.]+):\s+.*\n\t+at)|(?:Caused by:\s+((?:com|org|net|java)[a-zA-Z.]+)))
   
   # capture group fields/indexes
@@ -27,6 +29,7 @@ db:
   mongo:
     host: 127.0.0.1
     port: 27017    
+    
     db: treehunter 
     log-collection: logs
     files-collection: files

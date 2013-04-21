@@ -18,4 +18,4 @@
 (defroutes app-routes
   (context "/api" [] api-routes)
   (route/resources "/")
-  (route/not-found "Not Found"))
+  (route/not-found (resource-response "404.html" {:root "public/app"})))
