@@ -1,7 +1,7 @@
 (ns treehunter.services
   (:use [clojurewerkz.quartzite.jobs :only [defjob]]
         [clojurewerkz.quartzite.schedule.cron :only [schedule cron-schedule]]
-        [slingshot.slingshot :only [throw+]])
+        [slingshot.slingshot :only [try+ throw+]])
   (:require [compojure.handler :as handler]
             [compojure.route :as route]
             [treehunter.routes :as api]
@@ -38,16 +38,19 @@
 (defn- files-under 
   "Return the list of files under the given directory path."
   [^String dir]
-  (filter #(.isFile %)(-> dir File. file-seq)))
+  (map #(.getAbsolutePath %) (filter #(.isFile %)(-> dir File. file-seq))))
 
 (defjob ScanJob [ctx]
   (let [files (files-under log-dir)]
-    (println (str "Scanning files under directory " log-dir))
-    (dorun 
-      (map #(if (.file-processing-started? dao %)               
-              (println (str "Skipping " (.getAbsolutePath %)))
-              (.process-file-to-db dao (.getAbsolutePath %)))
+    (println "Scanning files under directory " log-dir)
+    (try
+     (dorun 
+      (map #(if (.file-processing-started? @dao %)               
+              (println (str "Skipping " %))
+              (parser/process-file-to-db % @dao))
            files))
+     (catch Exception e
+       (println "EXCEPTION PROCESSING LOGS: " (.getMessage e))))
     (println "Finished processing job.")))
 
 (defn job-init! []

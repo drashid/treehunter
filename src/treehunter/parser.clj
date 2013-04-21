@@ -16,7 +16,9 @@
 (def date-formatter (time/formatter (conf/path conf/parser :fields :datetime :format)))
 
 (defn- group-seq 
-  "Group stream sequence using the boolean grouping function."
+  "Group stream sequence using the boolean grouping function.
+   For example: 
+     (group-seq [true false false true false true] identity) => [[true false false] [true false] [true]]"
   ([lst group-with-prev?]
     (group-seq lst group-with-prev? []))
   ([lst group-with-prev? agg]
@@ -62,6 +64,7 @@
      (map parse-log-groups (group-seq (map parse-line lines) #(not (:matched %)))))))
 
 (defn process-file-to-db [filename ^LogDao dao]
+  (println "Parsing file and contents to DB: " filename)
   (try+ 
    (.set-file-status! dao filename :started)
    (.insert-logs! dao (read-log-file filename))
