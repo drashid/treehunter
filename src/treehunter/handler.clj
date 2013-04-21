@@ -4,24 +4,13 @@
         [slingshot.slingshot :only [throw+]])
   (:require [compojure.handler :as handler]
             [compojure.route :as route]
+            [treehunter.routes :as api]
             [ring.middleware.json :as json-middleware]
             [treehunter.mongo :as mongo]
             [treehunter.config :as conf]
             [treehunter.parser :as parser])
   (:import [treehunter.mongo MongoDao]
            [treehunter.db LogDao]))
-
-;;
-;; Routing setup
-;;
-
-(defroutes api-routes 
-  (GET "/" [] (response {:hello "Hello World"})))
-
-(defroutes app-routes
-  (context "/api" [] api-routes)
-  (route/resources "/")
-  (route/not-found "Not Found"))
 
 ;;
 ;; DAO setup
@@ -44,7 +33,7 @@
 ;; Wired up in :handler in project.clj
 (def app
   (handler/site 
-    (-> app-routes 
+    (-> api/app-routes
         json-middleware/wrap-json-response
         json-middleware/wrap-json-body)))
 
