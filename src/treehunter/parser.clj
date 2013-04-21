@@ -1,9 +1,11 @@
 (ns treehunter.parser
-  (:use [clojurewerkz.quartzite.jobs :only [defjob]])
+  (:use [clojurewerkz.quartzite.jobs :only [defjob]]
+        [slingshot.slingshot :only [throw+ try+]])
   (:require [clojurewerkz.quartzite.scheduler :as qs]
             [treehunter.config :as conf]
             [clj-time.format :as time])
-  (:import [java.io File]))
+  (:import [java.io File]
+           [treehunter.db LogDao]))
 
 ;;
 ;; Recurring job to search for and parse new logs
@@ -59,7 +61,7 @@
         fields (conf/parser :fields)]
     {:datetime (time/parse date-formatter (nth primary (conf/path fields :datetime :index)))
      :type (nth primary (conf/path fields :type :index))
-     :class (nth primary (conf/path fields :class :index))
+     :source (nth primary (conf/path fields :source :index))
      :message (reduce 
                #(str %1 "\n" (:body %2)) 
                (nth primary (conf/path fields :message :index)) 
@@ -73,6 +75,15 @@
    (let [lines (line-seq rdr)]
      (map parse-log-groups (group-seq (map parse-line lines) #(not (:matched %)))))))
 
+(defn process-file-to-db [filename ^LogDao dao]
+  (try+ 
+   (.set-file-status! dao filename :started)
+   (dorun 
+     (map #(.insert-log! dao %) (read-log-file filename)))
+   (.set-file-status! dao filename :completed)
+   (catch Object _
+     (.set-file-status! dao filename :failed)
+     (throw+))))
 
 ;; TESTING CODE
 

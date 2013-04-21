@@ -10,7 +10,7 @@ parser:
       format: dd MMM yyyy HH:mm:ss,SSS
     type: 
       index: 1
-    class: 
+    source: 
       index: 2
     message: 
       index: 3

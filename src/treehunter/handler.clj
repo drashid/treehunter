@@ -55,4 +55,6 @@
 (defn -main [& args]
   (do
     (init!)
-    (map #(.insert-log! @dao %) (parser/read-log-file "resources/sample-log"))))
+    (parser/process-file-to-db "resources/sample-log" @dao)))
+
+(-main )
