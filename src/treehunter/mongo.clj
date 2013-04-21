@@ -23,6 +23,14 @@
                            :status status
                            :date (now)} :upsert true))
 
+(defn- find-grouped-counts []
+  (let [q-result (mc/aggregate log-collection 
+                      [{$group {:_id {:source "$source"
+                                      :type "$type"}
+                                :count {$sum 1}}}])]
+     (group-by #(:source %)
+       (map #(assoc (:_id %) :count (:count %)) q-result))))
+
 (deftype MongoDao []
   db/LogDao
   (init! [this] (init-mongo!))
@@ -33,11 +41,6 @@
   (insert-logs! [this item-list] (mc/insert-batch log-collection item-list))
   
   ;; lookup
-  (find-counts-by-source-type [this] (group-by #(:source %)
-                                       (map #(assoc (:_id %) :count (:count %))
-                                            (mc/aggregate log-collection 
-                                              [{$group {:_id {:source "$source"
-                                                              :type "$type"}
-                                                        :count {$sum 1}}}]))))
+  (find-counts-by-source-type [this] (find-grouped-counts))
 )
 
