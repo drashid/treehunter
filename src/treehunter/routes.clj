@@ -15,7 +15,14 @@
 (defroutes api-routes 
   (GET "/" [] (response {:hello "Hello World"})))
 
+(def ^:private root-dir {:root "public/app"})
+
 (defroutes app-routes
+  ;; REST API
   (context "/api" [] api-routes)
-  (route/resources "/")
-  (route/not-found (resource-response "404.html" {:root "public/app"})))
+  ;; serve index.html at /
+  (GET "/" [] (resource-response "index.html" root-dir))
+  ;; static file serving
+  (route/resources "/" root-dir)
+  ;; 404 handler
+  (route/not-found (resource-response "404.html" root-dir)))
