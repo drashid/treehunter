@@ -51,7 +51,8 @@
               (parser/process-file-to-db % @dao))
            files))
      (catch Exception e
-       (println "EXCEPTION PROCESSING LOGS: " (.getMessage e))))
+       (println "EXCEPTION PROCESSING LOGS: " (.getMessage e))
+       (.printStackTrace e)))
     (println "Finished processing job.")))
 
 (defn job-init! []
