@@ -18,15 +18,13 @@
 ;; DAO setup
 ;;
 
-(def ^:dynamic *dao* {})
-
-(defn db-init! [] 
+(defn db-service-init! [] 
   (let [db (case (:type conf/db)
               "mongo" (MongoDao.)
               (throw+ "Only 'mongo' is a valid Database type!"))]
     (do
-      (alter-var-root (var *dao*) (fn [_] (identity db)))
-      (.init! *dao*))))
+      (db/set-dao! db)
+      (db/init!))))
 
 ;;
 ;; Recurring job to search for and parse new logs
@@ -44,16 +42,16 @@
     (println "Scanning files under directory " log-dir)
     (try
      (dorun 
-      (map #(if (db/file-processing-started? *dao* %)               
+      (map #(if (db/file-processing-started? %)               
               (println (str "Skipping " %))
-              (parser/process-file-to-db *dao* %))
+              (parser/process-file-to-db %))
            files))
      (catch Exception e
        (println "EXCEPTION PROCESSING LOGS: " (.getMessage e))
        (.printStackTrace e)))
     (println "Finished processing job.")))
 
-(defn job-init! []
+(defn job-service-init! []
   (qs/initialize)
   (qs/start)
   (let [job (j/build

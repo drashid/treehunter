@@ -13,14 +13,24 @@
   (set-file-status! [this filename status])
   (insert-logs! [this item-list])
   
-  ;; log lookup
+  ;; Returns something of the form:
+  ;;  {'sourceA' [{'count' N 
+  ;;               'type' 'INFO|ERROR|...' 
+  ;;               'source' 'sourceA'}, ...] ...}
   (find-counts-by-source-type [this])
 )
 
-(defn file-processing-started? [dao filename] (.file-processing-started? dao filename))
+(def ^:dynamic ^LogDao *dao* {})
 
-(defn set-file-status! [dao filename status] (.set-file-status! dao filename status))
+(defn set-dao! [dao] 
+  (alter-var-root (var *dao*) (fn [_] (identity dao))))
 
-(defn insert-logs! [dao item-list] (.insert-logs! dao item-list))
+(defn init! [] (init! *dao*))
 
-(defn find-counts-by-source-type [dao] (.find-counts-by-source-type dao))
+(defn file-processing-started? [filename] (file-processing-started? *dao* filename))
+
+(defn set-file-status! [filename status] (set-file-status! *dao* filename status))
+
+(defn insert-logs! [item-list] (insert-logs! *dao* item-list))
+
+(defn find-counts-by-source-type [] (find-counts-by-source-type *dao*))

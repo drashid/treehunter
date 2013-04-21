@@ -33,9 +33,11 @@
   (insert-logs! [this item-list] (mc/insert-batch log-collection item-list))
   
   ;; lookup
-  (find-counts-by-source-type [this] (mc/aggregate log-collection 
-                                       [{$group {:_id {:source "$source"
-                                                       :type "$type"}
-                                                 :count {$sum 1}}}]))
+  (find-counts-by-source-type [this] (group-by #(:source %)
+                                       (map #(assoc (:_id %) :count (:count %))
+                                            (mc/aggregate log-collection 
+                                              [{$group {:_id {:source "$source"
+                                                              :type "$type"}
+                                                        :count {$sum 1}}}]))))
 )
 

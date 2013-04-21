@@ -16,6 +16,6 @@
 
 (defn init! []
   (do 
-    (services/db-init!)
-    (services/job-init!)))
+    (services/db-service-init!)
+    (services/job-service-init!)))
 
