@@ -1,8 +1,7 @@
 parser:
   # regex to parse a main log line 
-  # if a line doesn't match this, it will be rolled up into the previous line body
+  # if a line doesn't match this, it will be rolled up into the previous line body (such as a multi-line stack trace or message body)
   line-regex: ^([0-9]{1,2}\s+[A-Za-z]+\s+[0-9]{4}\s+[0-9.:,]+)\s+\[([A-Z]+)\]\s+.*?((?:com|org|net)[a-zA-Z.0-9]+):\s*(.*)$
-  # exception-class-regex: 
   
   # capture group fields/indexes
   fields:
