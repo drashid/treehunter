@@ -4,7 +4,8 @@
   (:require [compojure.handler :as handler]
             [compojure.route :as route]
             [ring.middleware.json :as json-middleware]
-            [treehunter.mongo :as mongo]
+            [treehunter.db :as db]
+            [treehunter.services :as services]
             [treehunter.config :as conf]
             [treehunter.parser :as parser]))
 
@@ -13,7 +14,8 @@
 ;;
 
 (defroutes api-routes 
-  (GET "/" [] (response {:hello "Hello World"})))
+  (GET "/" [] (response {:hello "Hello World"}))
+  (GET "/stats/" [] (response (db/find-counts-by-source-type services/*dao*))))
 
 (def ^:private root-dir {:root "public/app"})
 

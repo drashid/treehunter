@@ -1,5 +1,6 @@
 (ns treehunter.mongo
-  (:use [clj-time.core :only [now]])
+  (:use [clj-time.core :only [now]]
+        [monger.operators])
   (:require [treehunter.config :as conf]
             [monger.core :as mg]
             [monger.collection :as mc]
@@ -26,9 +27,15 @@
   db/LogDao
   (init! [this] (init-mongo!))
   
+  ;; insertion 
   (file-processing-started? [this filename] (not (nil? (mc/find-one log-status-collection {:filename filename}))))
   (set-file-status! [this filename status] (set-file-status filename status))
   (insert-logs! [this item-list] (mc/insert-batch log-collection item-list))
   
-  )
+  ;; lookup
+  (find-counts-by-source-type [this] (mc/aggregate log-collection 
+                                       [{$group {:_id {:source "$source"
+                                                       :type "$type"}
+                                                 :count {$sum 1}}}]))
+)
 
