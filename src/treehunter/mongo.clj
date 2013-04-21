@@ -6,8 +6,8 @@
             [treehunter.db :as db]            
             [monger.joda-time]))
 
-(def ^:private log-collection "rawLogs")
-(def ^:private log-status-collection "logFiles")
+(def ^:private log-collection (conf/path conf/db :mongo :log-collection))
+(def ^:private log-status-collection (conf/path conf/db :mongo :files-collection))
 
 (defn- init-mongo! []
   (do
@@ -25,6 +25,10 @@
 (deftype MongoDao []
   db/LogDao
   (init! [this] (init-mongo!))
+  
   (file-processing-started? [this filename] (not (nil? (mc/find-one log-status-collection {:filename filename}))))
   (set-file-status! [this filename status] (set-file-status filename status))
-  (insert-logs! [this item-list] (mc/insert-batch log-collection item-list)))
+  (insert-logs! [this item-list] (mc/insert-batch log-collection item-list))
+  
+  )
+

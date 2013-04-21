@@ -5,10 +5,17 @@
 ;;
 
 (defprotocol LogDao
+  ;; initialization
   (init! [this])
-  (set-file-status! [this filename status])
+  
+  ;; log parsing/insertion
   (file-processing-started? [this filename])
-  (insert-logs! [this item-list]))
+  (set-file-status! [this filename status])
+  (insert-logs! [this item-list])
+  
+  ;; log lookup
+  
+  )
   
   
 

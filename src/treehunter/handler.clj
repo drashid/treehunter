@@ -11,18 +11,17 @@
             [treehunter.parser :as parser]))
 
 ;;
-;; Server initialization
+;; Server initialization - wired up in project.clj
 ;;
 
-;; Wired up in :handler in project.clj
 (def app
   (handler/site 
     (-> api/app-routes
         json-middleware/wrap-json-response
         json-middleware/wrap-json-body)))
 
-;; Wired up in :init in project.clj
 (defn init! []
   (do 
     (services/db-init!)
     (services/job-init!)))
+

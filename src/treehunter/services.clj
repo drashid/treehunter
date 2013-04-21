@@ -15,6 +15,7 @@
   (:import [treehunter.mongo MongoDao]
            [treehunter.db LogDao]
            [java.io File]))
+
 ;;
 ;; DAO setup
 ;;
@@ -58,9 +59,9 @@
   (qs/start)
   (let [job (j/build
               (j/of-type ScanJob)
-              (j/with-identity (j/key "jobs.filehunter.1")))
+              (j/with-identity (j/key "jobs.filehunter")))
         trigger (t/build
-                  (t/with-identity (t/key "triggers.filehunter.1"))
+                  (t/with-identity (t/key "triggers.filehunter"))
                   (t/start-now)
                   (t/with-schedule (schedule
                                      (cron-schedule (:cron-schedule conf/parser)))))]

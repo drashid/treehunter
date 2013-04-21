@@ -3,7 +3,8 @@
         [slingshot.slingshot :only [throw+ try+]])
   (:require [clojurewerkz.quartzite.scheduler :as qs]
             [treehunter.config :as conf]
-            [clj-time.format :as time])
+            [clj-time.format :as time]
+            [clojure.java.io :as io])
   (:import [java.io File]
            [treehunter.db LogDao]))
 
@@ -12,6 +13,7 @@
 ;;
 
 (def line-regex (re-pattern (conf/parser :line-regex)))
+(def exception-regex (re-pattern (conf/parser :exception-regex)))
 
 (def date-formatter (time/formatter (conf/path conf/parser :fields :datetime :format)))
 
@@ -22,16 +24,16 @@
   ([lst group-with-prev?]
     (group-seq lst group-with-prev? []))
   ([lst group-with-prev? agg]
-     (if (empty? lst)
-       ;; base case, no more elements to consume
-       agg
-       ;; recursively continue grouping
-       (let [next (first lst)
-             grouped (take-while #(group-with-prev? %) (rest lst))]
-         (recur
-           (drop (count grouped) (rest lst))
-           group-with-prev?
-           (conj agg (cons next grouped)))))))
+    (if (empty? lst)
+      ;; base case, no more elements to consume
+      agg
+      ;; recursively continue grouping
+      (let [next (first lst)
+            grouped (take-while #(group-with-prev? %) (rest lst))]
+        (recur
+          (drop (count grouped) (rest lst))
+          group-with-prev?
+          (conj agg (cons next grouped)))))))
 
 (defn- parse-line 
   "Parse single line (potentially may be a non-primary line which will be grouped)"
@@ -46,22 +48,32 @@
   "Parse grouped logs"
   [group]
   (let [primary (:parsed (first group))
-        fields (conf/parser :fields)]
+        fields (conf/parser :fields)
+        message-body (reduce 
+                        #(str %1 "\n" (:body %2)) 
+                        (nth primary (conf/path fields :message :index)) 
+                        (rest group))
+        exception-matcher (re-matcher exception-regex message-body)]
     {:datetime (time/parse date-formatter (nth primary (conf/path fields :datetime :index)))
      :type (nth primary (conf/path fields :type :index))
      :source (nth primary (conf/path fields :source :index))
-     :message (reduce 
-               #(str %1 "\n" (:body %2)) 
-               (nth primary (conf/path fields :message :index)) 
-               (rest group))
+     :message message-body
+     :exceptions (filter #(identity %) 
+                    (flatten 
+                      (take-while 
+                        #(not (empty? %))
+                          (repeatedly #(rest (re-find exception-matcher))))))
      }))
 
 (defn read-log-file 
   "Parse log file into stream of maps for each entry"
-  [filename] 
-  (with-open [rdr (clojure.java.io/reader filename)]
-   (let [lines (line-seq rdr)]
-     (map parse-log-groups (group-seq (map parse-line lines) #(not (:matched %)))))))
+  [^String filename] 
+  (let [is (if (.endsWith filename ".gz")
+             (java.util.zip.GZIPInputStream. (io/input-stream filename))
+             (io/input-stream filename))]
+    (with-open [rdr (io/reader is)]
+     (let [lines (line-seq rdr)]
+       (map parse-log-groups (group-seq (map parse-line lines) #(not (:matched %))))))))
 
 (defn process-file-to-db [filename ^LogDao dao]
   (println "Parsing file and contents to DB: " filename)
@@ -73,9 +85,3 @@
      (.set-file-status! dao filename :failed)
      (throw+))))
 
-;; TESTING CODE
-
-;(defn -main [& args]
-;  (println (read-log-file "resources/sample-log")))
-
-;(-main)
