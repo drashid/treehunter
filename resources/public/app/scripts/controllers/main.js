@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('publicApp')
-  .controller('MainCtrl', ['$scope', '$resource', function ($scope, $resource) {
+  .controller('MainCtrl', ['$scope', '$resource', '$location', function ($scope, $resource, $location) {
 	$scope.stats = $resource('/api/stats').get();
 
 	$scope.keys = function(stats){
@@ -19,4 +19,9 @@ angular.module('publicApp')
 			}
 		});
 	}
+
+	$scope.details = function(sourceKey){
+		$location.path('/source/' + sourceKey);
+	}
+
   }]);

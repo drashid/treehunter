@@ -7,6 +7,10 @@ angular.module('publicApp', ['ngResource'])
         templateUrl: 'views/main.html',
         controller: 'MainCtrl'
       })
+	  .when('/source/:className', {
+	    templateUrl: 'views/sourceDetail.html',
+		controller: 'SourceDetailCtrl'
+      })
       .otherwise({
         redirectTo: '/'
       });

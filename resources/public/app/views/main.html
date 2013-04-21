@@ -1,14 +1,14 @@
 <div class="row" ng-cloak>
     <table class="table table-striped table-bordered table-condensed">
         <thead>
-            <th ng-repeat="field in ['Source Class', 'INFO', 'WARN', 'ERROR']" ng-click="sortBy('{{field}}')" id="{{field}}">
-                {{field}} <span class="sortArrow">{{sortArrow}}</span>
+            <th ng-repeat="field in ['Source Class', 'INFO', 'WARN', 'ERROR']">
+                {{field}}
             </th>
         </thead>
         <tbody>
-            <tr ng-repeat="stat in keys(stats)">
-                <td>{{stat}}</td>
-                <td ng-repeat="count in counts(stat, ['INFO', 'WARN', 'ERROR'])">
+            <tr ng-repeat="source in keys(stats)">
+                <td ng-click="details(source)">{{source}}</td>
+                <td ng-repeat="count in counts(source, ['INFO', 'WARN', 'ERROR'])">
                     {{count}}
                 </td>
             </tr>
