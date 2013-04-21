@@ -25,7 +25,7 @@
 ;; File parsing
 ;;
 
-(def line-regex (re-pattern (conf/parser :regex)))
+(def line-regex (re-pattern (conf/parser :line-regex)))
 
 (def date-formatter (time/formatter (conf/path conf/parser :fields :datetime :format)))
 
@@ -78,8 +78,7 @@
 (defn process-file-to-db [filename ^LogDao dao]
   (try+ 
    (.set-file-status! dao filename :started)
-   (dorun 
-     (map #(.insert-log! dao %) (read-log-file filename)))
+   (.insert-logs! dao (read-log-file filename))
    (.set-file-status! dao filename :completed)
    (catch Object _
      (.set-file-status! dao filename :failed)

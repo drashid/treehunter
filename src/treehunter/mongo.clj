@@ -25,6 +25,6 @@
 (deftype MongoDao []
   db/LogDao
   (init! [this] (init-mongo!))
+  (file-processing-started? [this filename])
   (set-file-status! [this filename status] (set-file-status filename status))
-  (insert-log! [this log-item] (mc/insert log-collection log-item)))
-
+  (insert-logs! [this item-list] (mc/insert-batch log-collection item-list)))
