@@ -3,28 +3,12 @@
         ring.util.response
         [slingshot.slingshot :only [throw+]])
   (:require [compojure.handler :as handler]
-            [compojure.route :as route]
+            [treehunter.services :as services]
             [treehunter.routes :as api]
             [ring.middleware.json :as json-middleware]
             [treehunter.mongo :as mongo]
             [treehunter.config :as conf]
-            [treehunter.parser :as parser])
-  (:import [treehunter.mongo MongoDao]
-           [treehunter.db LogDao]))
-
-;;
-;; DAO setup
-;;
-
-(def dao (ref {}))
-
-(defn db-init! [] 
-  (let [db (case (:type conf/db)
-              "mongo" (MongoDao.)
-              (throw+ "Only 'mongo' is a valid Database type!"))]
-    (do
-      (dosync (ref-set dao db))
-      (.init! @dao))))
+            [treehunter.parser :as parser]))
 
 ;;
 ;; Server initialization
@@ -39,11 +23,6 @@
 
 ;; Wired up in :init in project.clj
 (defn init! []
-  (do (db-init!)))
-
-(defn -main [& args]
-  (do
-    (init!)
-    (parser/process-file-to-db "resources/sample-log" @dao)))
-
-(-main )
+  (do 
+    (services/db-init!)
+    (services/job-init!)))

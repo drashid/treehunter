@@ -16,13 +16,15 @@ parser:
     message: 
       index: 3
   
+  # cron schedule for job that looks for new logs to parse
+  cron-schedule: 0 * * * * ?
+  
   # root log directory
-  log-dir: "resources"
+  log-dir: "resources/logs"
       
 db: 
   type: mongo
   mongo:
     host: 127.0.0.1
     port: 27017
-    db: treehunter
-    
+    db: treehunter 

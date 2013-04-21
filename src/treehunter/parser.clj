@@ -8,20 +8,6 @@
            [treehunter.db LogDao]))
 
 ;;
-;; Recurring job to search for and parse new logs
-;;
-
-(def ^:private log-dir (:log-dir conf/parser))
-
-(defn- files-under 
-  "Return the list of files under the given directory path."
-  [^String dir]
-  (filter #(.isFile %)(-> dir File. file-seq)))
-
-(defjob scan-job [ctx]
-  (println (files-under log-dir)))
-
-;;
 ;; File parsing
 ;;
 
@@ -86,7 +72,7 @@
 
 ;; TESTING CODE
 
-(defn -main [& args]
-  (println (read-log-file "resources/sample-log")))
+;(defn -main [& args]
+;  (println (read-log-file "resources/sample-log")))
 
-(-main)
+;(-main)

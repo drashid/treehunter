@@ -25,6 +25,6 @@
 (deftype MongoDao []
   db/LogDao
   (init! [this] (init-mongo!))
-  (file-processing-started? [this filename])
+  (file-processing-started? [this filename] (not (nil? (mc/find-one log-status-collection {:filename filename}))))
   (set-file-status! [this filename status] (set-file-status filename status))
   (insert-logs! [this item-list] (mc/insert-batch log-collection item-list)))
