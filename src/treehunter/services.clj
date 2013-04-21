@@ -2,9 +2,7 @@
   (:use [clojurewerkz.quartzite.jobs :only [defjob]]
         [clojurewerkz.quartzite.schedule.cron :only [schedule cron-schedule]]
         [slingshot.slingshot :only [try+ throw+]])
-  (:require [compojure.handler :as handler]
-            [compojure.route :as route]
-            [treehunter.routes :as api]
+  (:require [treehunter.db :as db]
             [ring.middleware.json :as json-middleware]
             [treehunter.mongo :as mongo]
             [treehunter.config :as conf]
@@ -46,7 +44,7 @@
     (println "Scanning files under directory " log-dir)
     (try
      (dorun 
-      (map #(if (.file-processing-started? *dao* %)               
+      (map #(if (db/file-processing-started? *dao* %)               
               (println (str "Skipping " %))
               (parser/process-file-to-db *dao* %))
            files))
