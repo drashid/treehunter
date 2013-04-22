@@ -3,15 +3,15 @@
 angular.module('publicApp', ['ngResource'])
   .config(['$routeProvider', function ($routeProvider) {
     $routeProvider
-      .when('/', {
+      .when('/overview', {
         templateUrl: 'views/main.html',
         controller: 'MainCtrl'
       })
 	  .when('/source/:className', {
-	    templateUrl: 'views/sourceDetail.html',
-		controller: 'SourceDetailCtrl'
+	    templateUrl: 'views/searchList.html',
+		controller: 'SearchListCtrl'
       })
       .otherwise({
-        redirectTo: '/'
+        redirectTo: '/overview'
       });
   }]);

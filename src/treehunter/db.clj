@@ -18,6 +18,9 @@
   ;;               'type' 'INFO|ERROR|...' 
   ;;               'source' 'sourceA'}, ...] ...}
   (find-counts-by-source-type [this])
+  
+  (find-items-by-source [this source-class limit])
+  
 )
 
 (def ^:dynamic ^LogDao *dao* {})
@@ -34,3 +37,5 @@
 (defn insert-logs! [item-list] (insert-logs! *dao* item-list))
 
 (defn find-counts-by-source-type [] (find-counts-by-source-type *dao*))
+
+(defn find-items-by-source [source-class limit] (find-items-by-source *dao* source-class limit))

@@ -4,8 +4,10 @@
   (:require [treehunter.config :as conf]
             [monger.core :as mg]
             [monger.collection :as mc]
+            [monger.query :as query]
             [treehunter.db :as db]            
-            [monger.joda-time]))
+            [monger.joda-time])
+  (:import [org.bson.types ObjectId]))
 
 (def ^:private log-collection (conf/path conf/db :mongo :log-collection))
 (def ^:private log-status-collection (conf/path conf/db :mongo :files-collection))
@@ -38,6 +40,16 @@
      (group-by #(:source %)
        (map #(assoc (:_id %) :count (:count %)) q-result))))
 
+(defn- id-to-string [item]
+  (assoc item :_id (.toString (:_id item))))
+
+(defn- find-by-source [source-class limit]
+  (map id-to-string
+   (query/with-collection log-collection
+    (query/find {:source source-class})                     
+    (query/sort {:datetime -1})
+    (query/limit limit))))
+
 (deftype MongoDao []
   db/LogDao
   (init! [this] (init-mongo!))
@@ -49,6 +61,7 @@
   
   ;; lookup
   (find-counts-by-source-type [this] (find-grouped-counts))
+  (find-items-by-source [this source-class limit] (find-by-source source-class limit))
 )
 
 
