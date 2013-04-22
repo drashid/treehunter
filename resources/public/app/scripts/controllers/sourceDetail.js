@@ -1,10 +1,6 @@
 'use strict';
 
 angular.module('publicApp')
-  .controller('SourceDetailCtrl', function ($scope) {
-    $scope.awesomeThings = [
-      'HTML5 Boilerplate',
-      'AngularJS',
-      'Karma'
-    ];
-  });
+  .controller('SourceDetailCtrl', ['$scope', '$resource', '$location', function ($scope, $resource, $location) {
+	
+  }]);

@@ -33,3 +33,6 @@ db:
     db: treehunter 
     log-collection: logs
     files-collection: files
+    
+    # Warning: You may have to manually drop old TTL index to change this value
+    expire-in-days: 365

@@ -14,8 +14,8 @@
 ;;
 
 (defroutes api-routes 
-  (GET "/" [] (response {:hello "Hello World"}))
-  (GET "/stats" [] (response (db/find-counts-by-source-type))))
+  (GET "/stats" [] (response (db/find-counts-by-source-type)))
+  (GET "/source/:class-name" [class-name] (response {:name class-name})))
 
 (def ^:private root-dir {:root "public/app"})
 
