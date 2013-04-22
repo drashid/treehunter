@@ -7,7 +7,7 @@ angular.module('publicApp', ['ngResource'])
         templateUrl: 'views/main.html',
         controller: 'MainCtrl'
       })
-	  .when('/source/:className', {
+	  .when('/:type/:className', {
 	    templateUrl: 'views/searchList.html',
 		controller: 'SearchListCtrl'
       })

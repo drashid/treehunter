@@ -14,9 +14,11 @@
 ;;
 
 (defroutes api-routes 
-  (GET "/stats" [] 
+  
+  (GET "/stats/counts" [] 
        (response (db/find-counts-by-source-type)))
-  (GET "/search/" {params :params} []
+  
+  (GET "/search" {params :params} []
        (let [source (:source params)
              limit (read-string (or (:limit params) "1"))]
          (response (db/find-items-by-source source limit)))))

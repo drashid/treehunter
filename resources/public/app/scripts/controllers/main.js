@@ -2,7 +2,8 @@
 
 angular.module('publicApp')
   .controller('MainCtrl', ['$scope', '$resource', '$location', function ($scope, $resource, $location) {
-	$scope.stats = $resource('/api/stats').get();
+
+	$scope.stats = $resource('/api/stats/counts').get();
 
 	$scope.keys = function(stats){
 		return _.keys(stats);
