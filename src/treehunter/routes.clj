@@ -16,8 +16,10 @@
 (defroutes api-routes 
   (GET "/stats" [] 
        (response (db/find-counts-by-source-type)))
-  (GET "/search/source/:class-name" [class-name] 
-       (response (db/find-items-by-source class-name 100))))
+  (GET "/search/" {params :params} []
+       (let [source (:source params)
+             limit (read-string (or (:limit params) "1"))]
+         (response (db/find-items-by-source source limit)))))
 
 (def ^:private root-dir {:root "public/app"})
 
