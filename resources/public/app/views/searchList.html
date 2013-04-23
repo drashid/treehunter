@@ -1,27 +1,23 @@
-<form class="well form-horizontal">
-    <label>From:</label>
-    <div class="form-inline">
-        <div class="control-group input-append">
-            <input type="text" ng-model="datepicker.start" data-date-format="mm/dd/yyyy" bs-datepicker>
-            <button type="button" class="btn" data-toggle="datepicker"><i class="icon-calendar"></i></button>
-        </div>
-        <div class="control-group input-append">
-            <input type="text" ng-model="timepicker.start" bs-timepicker>
-            <button type="button" class="btn" data-toggle="timepicker"><i class="icon-time"></i></button>
-        </div>
+<form class="well form-inline">
+    <label><b>From</b></label>
+    <div class="control-group input-append">
+        <input type="text" ng-model="datepicker.start" data-date-format="mm/dd/yyyy" bs-datepicker>
+        <button type="button" class="btn" data-toggle="datepicker"><i class="icon-calendar"></i></button>
     </div>
-    <label style="margin-left: 5px">To:</label>
-    <div class="form-inline">
-        <div class="control-group input-append">
-            <input type="text" ng-model="datepicker.end" data-date-format="mm/dd/yyyy" bs-datepicker>
-            <button type="button" class="btn" data-toggle="datepicker"><i class="icon-calendar"></i></button>
-        </div>
-        <div class="control-group input-append">
-            <input type="text" ng-model="timepicker.end" bs-timepicker>
-            <button type="button" class="btn" data-toggle="timepicker"><i class="icon-time"></i></button>
-        </div>
+    <div class="control-group input-append">
+        <input type="text" ng-model="timepicker.start" bs-timepicker>
+        <button type="button" class="btn" data-toggle="timepicker"><i class="icon-time"></i></button>
     </div>
-    <button type="submit" class="btn btn-primary">Search</button>
+    <label class="inline-form-item-start"><b>To</b></label>
+    <div class="control-group input-append">
+        <input type="text" ng-model="datepicker.end" data-date-format="mm/dd/yyyy" bs-datepicker>
+        <button type="button" class="btn" data-toggle="datepicker"><i class="icon-calendar"></i></button>
+    </div>
+    <div class="control-group input-append">
+        <input type="text" ng-model="timepicker.end" bs-timepicker>
+        <button type="button" class="btn" data-toggle="timepicker"><i class="icon-time"></i></button>
+    </div>
+    <button type="submit" class="inline-form-item-start btn btn-primary">Search</button>
 </form>
 
 <ul class="pager">
