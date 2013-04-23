@@ -1,4 +1,4 @@
-<form class="form-actions form-inline">
+<form class="well form-inline">
     <label>From:</label>
     <div class="control-group input-append">
         <input type="text" ng-model="datepicker.start" data-date-format="mm/dd/yyyy" bs-datepicker>
@@ -9,7 +9,18 @@
         <input type="text" ng-model="datepicker.end" data-date-format="mm/dd/yyyy" bs-datepicker>
         <button type="button" class="btn" data-toggle="datepicker"><i class="icon-calendar"></i></button>
     </div>
+    <button type="submit" class="pull-right btn btn-primary">Search</button>
 </form>
+        
+<ul class="pager">
+    <li class="previous">
+        <a href="#">&larr; Older</a>
+    </li>
+    <li class="next">
+        <a href="#">Newer &rarr;</a>
+    </li>
+</ul>
+
 <div class="row" ng-cloak>
     <table class="table table-striped table-bordered table-condensed">
         <thead>
