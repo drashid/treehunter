@@ -22,7 +22,7 @@ angular.module('publicApp')
 	}
 
 	$scope.details = function(sourceKey){
-		$location.path('/source/' + sourceKey);
+		$location.path('/overview/source/' + sourceKey);
 	}
 
   }]);

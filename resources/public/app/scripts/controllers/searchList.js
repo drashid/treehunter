@@ -1,16 +1,22 @@
 'use strict';
 
 angular.module('publicApp')
-  .controller('SearchListCtrl', ['$scope', '$http', '$routeParams', function ($scope, $http, $routeParams) {
+  .controller('SearchListCtrl', ['$scope', '$http', '$routeParams', '$location', function ($scope, $http, $routeParams, $location) {
 
 	switch($routeParams.type){
 		case 'source':
-			$scope.items = $http({
-							url: "/api/search",
-							method: "GET",
-							params: {source: $routeParams.className, limit: 10}});
+			$http({
+  				url: "/api/search",
+				method: "GET",
+				params: {source: $routeParams.className, limit: 10}
+			}).success(function(data){
+				$scope.items = data;
+			});
 			break;
 	}
 
+	$scope.redirectItem = function(item){
+		$location.path("/detail/item/" + item._id);
+	};
 
   }]);
