@@ -3,6 +3,8 @@
 angular.module('publicApp')
   .controller('SearchListCtrl', ['$scope', '$http', '$routeParams', '$location', function ($scope, $http, $routeParams, $location) {
 
+	$scope.typeFilter = 'Any';
+
 	switch($routeParams.type){
 		case 'source':
 			$http({

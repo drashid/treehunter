@@ -28,10 +28,18 @@
         <button type="button" class="btn" data-toggle="timepicker"><i class="icon-time"></i></button>
     </div>
 
-    <div class="btn-group inline-form-item-start" data-toggle="buttons-checkbox">
-        <button type="button" class="btn" ng-model="type.info" btn-checkbox>INFO</button>
-        <button type="button" class="btn" ng-model="type.warn" btn-checkbox>WARN</button>
-        <button type="button" class="btn" ng-model="type.error" btn-checkbox>ERROR</button>
+    <div class="btn-group inline-form-item-start">
+        <button class="btn" style="margin-bottom: 1px">{{typeFilter}}</button>
+        <button class="btn dropdown-toggle" data-toggle="dropdown" style="margin-bottom: 1px">
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+            <li><a ng-click="typeFilter='Any'">Any</a></li>
+            <li><a ng-click="typeFilter='INFO'">INFO</a></li>
+            <li><a ng-click="typeFilter='WARN'">WARN</a></li>
+            <li><a ng-click="typeFilter='ERROR'">ERROR</a></li>
+            <li><a ng-click="typeFilter='FATAL'">FATAL</a></li>
+        </ul>
     </div>
 
     <button type="submit" class="inline-form-item-start btn btn-primary" style="margin-top: 1px">Search</button>

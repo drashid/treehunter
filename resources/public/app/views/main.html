@@ -9,14 +9,14 @@
 <div class="row" ng-cloak>
     <table class="table table-striped table-bordered table-condensed">
         <thead>
-            <th ng-repeat="field in ['Source Class', 'INFO', 'WARN', 'ERROR']">
+            <th ng-repeat="field in ['Source Class', 'INFO', 'WARN', 'ERROR', 'FATAL']">
                 {{field}}
             </th>
         </thead>
         <tbody>
             <tr ng-repeat="source in keys(stats)">
                 <td ng-click="details(source)">{{source}}</td>
-                <td ng-repeat="count in counts(source, ['INFO', 'WARN', 'ERROR'])">
+                <td ng-repeat="count in counts(source, ['INFO', 'WARN', 'ERROR', 'FATAL'])">
                     {{count}}
                 </td>
             </tr>
