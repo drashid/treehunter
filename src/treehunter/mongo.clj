@@ -20,8 +20,7 @@
     (mc/ensure-index log-status-collection (array-map :filename 1) {:unique true})
     ;; TTL expiration 
     (let [now (now)
-          expire-seconds (in-secs 
-                          (interval (minus now expire-days) now))]
+          expire-seconds (in-secs (interval (minus now expire-days) now))]
       (mc/ensure-index log-collection (array-map :datetime 1)  
                                       {:expireAfterSeconds expire-seconds}))))
 

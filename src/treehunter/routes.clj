@@ -20,6 +20,8 @@
   
   (GET "/search" {params :params} []
        (let [source (:source params)
+             start (:start-date params)
+             end (:end-date params)
              limit (read-string (or (:limit params) "1"))]
          (response (db/find-items-by-source source limit)))))
 

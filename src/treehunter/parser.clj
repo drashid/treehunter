@@ -36,27 +36,47 @@
       (assoc result :parsed (rest parsed))
       (assoc result :body line))))
 
+(defn- to-word-freq [string]
+  (let [words (clojure.string/split (clojure.string/lower-case string) #"[^a-zA-Z0-9]+")]
+   (reduce #(assoc % %2 (inc (% %2 0))) {} words)))
+
+(defn- take-top-by-freq [string n]
+  (map 
+   first 
+   (take n 
+         ;; sort by count (higher first), and if equal counts by length (lower first)
+         (sort-by identity #(let [k1 (first %1) v1 (second %1)
+                                  k2 (first %2) v2 (second %2)]
+                              (if (= v1 v2)
+                                (< (count k1) (count k2))
+                                (> v1 v2))) (to-word-freq string)))))
+
 (defn- parse-log-groups 
   "Parse grouped logs"
   [group]
   (let [primary (:parsed (first group))
         fields (conf/parser :fields)
+        ;; merge the rest of the bodys into the initial message
         message-body (reduce 
                         #(str %1 "\n" (:body %2)) 
                         (nth primary (conf/path fields :message :index)) 
                         (rest group))
-        ;; _ (println "\n\n" group)
-        exception-matcher (re-matcher exception-regex message-body)]
-    {:datetime (time/parse date-formatter (nth primary (conf/path fields :datetime :index)))
-     :type (nth primary (conf/path fields :type :index))
-     :source (nth primary (conf/path fields :source :index))
-     :message message-body
-     :exceptions (filter #(identity %) 
-                    (flatten 
-                      (take-while 
-                        #(not (empty? %))
-                          (repeatedly #(rest (re-find exception-matcher))))))
-     }))
+        exception-matcher (re-matcher exception-regex message-body)
+        entry {:datetime (time/parse date-formatter (nth primary (conf/path fields :datetime :index)))
+               :type (nth primary (conf/path fields :type :index))
+               :source (nth primary (conf/path fields :source :index))
+               :message message-body
+               :exceptions (filter #(identity %) 
+                              (flatten 
+                                (take-while 
+                                  #(not (empty? %))
+                                    (repeatedly #(rest (re-find exception-matcher))))))
+               }]
+    (assoc entry 
+      :signature 
+      (str (:type entry) "~"
+           (:source entry) "~"
+           (clojure.string/join "-" (take-top-by-freq (:message entry) 5))))))
 
 (defn process-file-to-db [filename]
   (println "Parsing file and contents to DB: " filename)
