@@ -1,6 +1,7 @@
 (ns treehunter.routes
   (:use compojure.core
-        ring.util.response)
+        ring.util.response
+        [clj-time.format :only [formatter parse]])
   (:require [compojure.handler :as handler]
             [compojure.route :as route]
             [ring.middleware.json :as json-middleware]
@@ -13,6 +14,13 @@
 ;; Routing setup
 ;;
 
+;; Example: "2013-04-16T07:00:00.000Z"
+(def ^:private iso-formatter (formatter "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"))
+
+(defn- parse-date [date-string]
+  (when date-string 
+    (parse iso-formatter date-string)))
+
 (defroutes api-routes 
   
   (GET "/stats/counts" [] 
@@ -20,9 +28,10 @@
   
   (GET "/search" {params :params} []
        (let [source (:source params)
-             start (:start-date params)
-             end (:end-date params)
+             start (parse-date (:startdate params))
+             end (parse-date (:enddate params))
              limit (read-string (or (:limit params) "1"))]
+         (println start " " end)
          (response (db/find-items-by-source source limit)))))
 
 (def ^:private root-dir {:root "public/app"})

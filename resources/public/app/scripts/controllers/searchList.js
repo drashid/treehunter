@@ -50,7 +50,7 @@ angular.module('publicApp')
 			var date = $scope.datepicker.start;
 			var localDate = new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), time.hours, time.minutes);
 
-			params.startdate = localDate;
+			params.startdate = localDate.toISOString();
 		}
 
 		if($scope.datepicker && $scope.datepicker.end){
@@ -67,7 +67,7 @@ angular.module('publicApp')
 			var date = $scope.datepicker.end;
 			var localDate = new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), time.hours, time.minutes);
 
-			params.enddate = localDate;
+			params.enddate = localDate.toISOString();
 		}
 
 		if($scope.typeFilter !== 'Any'){
