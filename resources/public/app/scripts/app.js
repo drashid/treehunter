@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('publicApp', ['ngResource', '$strap.directives'])
+angular.module('publicApp', ['ngResource', '$strap.directives', 'ui.bootstrap'])
   .config(['$routeProvider', function ($routeProvider) {
     $routeProvider
       .when('/overview', {

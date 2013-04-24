@@ -1,4 +1,13 @@
+<!-- Navbar -->
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <div>
+        </div>
+    </div>
+</div>
+
 <form class="well form-inline">
+
     <label><b>From</b></label>
     <div class="control-group input-append">
         <input type="text" ng-model="datepicker.start" data-date-format="mm/dd/yyyy" bs-datepicker>
@@ -8,6 +17,7 @@
         <input type="text" ng-model="timepicker.start" bs-timepicker>
         <button type="button" class="btn" data-toggle="timepicker"><i class="icon-time"></i></button>
     </div>
+
     <label class="inline-form-item-start"><b>To</b></label>
     <div class="control-group input-append">
         <input type="text" ng-model="datepicker.end" data-date-format="mm/dd/yyyy" bs-datepicker>
@@ -17,7 +27,14 @@
         <input type="text" ng-model="timepicker.end" bs-timepicker>
         <button type="button" class="btn" data-toggle="timepicker"><i class="icon-time"></i></button>
     </div>
-    <button type="submit" class="inline-form-item-start btn btn-primary">Search</button>
+
+    <div class="btn-group inline-form-item-start" data-toggle="buttons-checkbox">
+        <button type="button" class="btn" ng-model="type.info" btn-checkbox>INFO</button>
+        <button type="button" class="btn" ng-model="type.warn" btn-checkbox>WARN</button>
+        <button type="button" class="btn" ng-model="type.error" btn-checkbox>ERROR</button>
+    </div>
+
+    <button type="submit" class="inline-form-item-start btn btn-primary" style="margin-top: 1px">Search</button>
 </form>
 
 <ul class="pager">
