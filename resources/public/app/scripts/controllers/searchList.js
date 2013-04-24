@@ -3,20 +3,16 @@
 angular.module('publicApp')
   .controller('SearchListCtrl', ['$scope', '$http', '$routeParams', '$location', function ($scope, $http, $routeParams, $location) {
 
-	$scope.typeFilter = 'Any';
-
-	switch($routeParams.type){
-		case 'source':
-			$scope.source = $routeParams.className;
-
-			$http({
-  				url: "/api/search",
-				method: "GET",
-				params: {source: $routeParams.className, limit: 10}
-			}).success(function(data){
-				$scope.items = data;
-			});
-			break;
+	function searchRequest(params){
+		$http({
+			url: "/api/search",
+			method: "GET",
+			params: params
+		}).success(function(data){
+			$scope.items = data;
+		}).error(function(){
+			// TODO
+		});
 	}
 
 	$scope.redirectItem = function(item){
@@ -32,24 +28,23 @@ angular.module('publicApp')
 	};
 
 	$scope.search = function(){
-		var params = {};
+		var params = {limit: 2};
 
 		if($scope.source){
 			params.source = $scope.source;
 		}
 
-		var now = new Date();
 		if($scope.datepicker && $scope.datepicker.start){
 			var time = {
-				hours: now.getHours(),
-				minutes: now.getMinutes()
+				hours: 0,
+				minutes: 0
 			};
 
 			if($scope.timepicker.start){
 				time = getHoursAndMinutes($scope.timepicker.start);
 			}
 
-			// this date is in UTC, but we want to treat it as if it's in local time since the user set it
+			// this date is in UTC (datepicker default), but we want to treat it as if it's in local time since the user set it
 			var date = $scope.datepicker.start;
 			var localDate = new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), time.hours, time.minutes);
 
@@ -58,15 +53,15 @@ angular.module('publicApp')
 
 		if($scope.datepicker && $scope.datepicker.end){
 			var time = {
-				hours: now.getHours(),
-				minutes: now.getMinutes()
+				hours: 0,
+				minutes: 0
 			};
 
 			if($scope.timepicker.end){
 				time = getHoursAndMinutes($scope.timepicker.end);
 			}
 
-			// this date is in UTC, but we want to treat it as if it's in local time since the user set it
+			// this date is in UTC (datepicker default), but we want to treat it as if it's in local time since the user set it
 			var date = $scope.datepicker.end;
 			var localDate = new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), time.hours, time.minutes);
 
@@ -77,7 +72,24 @@ angular.module('publicApp')
 			params.type = $scope.typeFilter;
 		}
 
-		console.log("Querying with the following parameters: " + params);
+		console.log(params);
+		console.log("Querying with the following parameters: " + JSON.stringify(params));
+
+		// query
+		searchRequest(params);
 	}
 
-  }]);
+	//
+	// INIT
+	//
+
+	switch($routeParams.type){
+		case 'source':
+			$scope.source = $routeParams.className;
+			searchRequest({source: $scope.source, limit: 10});
+			break;
+	}
+
+	$scope.typeFilter = 'Any';
+
+}]);
