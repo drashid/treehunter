@@ -49,6 +49,11 @@
     (query/sort {:datetime -1})
     (query/limit limit))))
 
+;
+; Query to get the first example for a given signature with the aggregation framework
+; db.logs.aggregate( { $group: { _id: "$signature", realId: {$first: "$_id"}, source: {$first: "$source" }} })
+;
+
 (deftype MongoDao []
   db/LogDao
   (init! [this] (init-mongo!))

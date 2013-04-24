@@ -88,6 +88,8 @@ angular.module('publicApp')
 	switch($routeParams.type){
 		case 'source':
 			$scope.source = $routeParams.className;
+			$scope.type = 'Source Class';
+			$scope.typeName = $scope.source;
 			searchRequest({source: $scope.source, limit: defaultLimit});
 			break;
 	}
