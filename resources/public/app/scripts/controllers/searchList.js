@@ -3,6 +3,8 @@
 angular.module('publicApp')
   .controller('SearchListCtrl', ['$scope', '$http', '$routeParams', '$location', function ($scope, $http, $routeParams, $location) {
 
+	var defaultLimit = 100;
+
 	function searchRequest(params){
 		$http({
 			url: "/api/search",
@@ -28,7 +30,7 @@ angular.module('publicApp')
 	};
 
 	$scope.search = function(){
-		var params = {limit: 2};
+		var params = {limit: defaultLimit};
 
 		if($scope.source){
 			params.source = $scope.source;
@@ -86,7 +88,7 @@ angular.module('publicApp')
 	switch($routeParams.type){
 		case 'source':
 			$scope.source = $routeParams.className;
-			searchRequest({source: $scope.source, limit: 10});
+			searchRequest({source: $scope.source, limit: defaultLimit});
 			break;
 	}
 
