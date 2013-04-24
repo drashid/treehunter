@@ -1,5 +1,7 @@
 (ns treehunter.handler
-  (:require [compojure.handler :as handler]
+  (:gen-class)
+  (:require [ring.adapter.jetty :as jetty]
+            [compojure.handler :as handler]
             [treehunter.services :as services]
             [treehunter.routes :as api]
             [ring.middleware.json :as json-middleware]
@@ -21,3 +23,8 @@
     (services/db-service-init!)
     (services/job-service-init!)))
 
+;; run via 'lein ring server' or via this main method
+;; TODO pass in config, port
+(defn -main [& args]
+  (init!)
+  (jetty/run-jetty app {:port 3000}))

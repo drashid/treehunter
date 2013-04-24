@@ -8,9 +8,11 @@
                  [clj-yaml "0.4.0"]
                  [clj-time "0.5.0"]
                  [com.novemberain/monger "1.5.0"]
-                 [slingshot "0.10.3"]]
+                 [slingshot "0.10.3"]
+                 [ring/ring-jetty-adapter "1.1.0"]]
   :plugins [[lein-ring "0.8.2"]]
+  :main treehunter.handler
+  :aot [treehunter.handler]
   :ring {:handler treehunter.handler/app
          :init treehunter.handler/init! }
-  :profiles
-  {:dev {:dependencies [[ring-mock "0.1.3"]]}})
+  :profiles {:dev {:dependencies [[ring-mock "0.1.3"]]}})
