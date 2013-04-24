@@ -38,3 +38,7 @@ input[bs-datepicker] {
 .inline-form-item-start {
     margin-left: 15px;
 }
+
+.small-margin-left {
+    margin-left: 20px;
+}

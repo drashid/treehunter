@@ -1,8 +1,9 @@
 <!-- Navbar -->
 <div class="navbar navbar-fixed-top">
     <div class="navbar-inner">
-        <div>
-        </div>
+        <form class="small-margin-left navbar-search pull-left">
+            <input type="text" class="search-query" placeholder="Filter" ng-model="filterText">
+        </form>
     </div>
 </div>
 
@@ -45,14 +46,14 @@
     <button type="submit" class="inline-form-item-start btn btn-primary" style="margin-top: 1px">Search</button>
 </form>
 
-<ul class="pager">
-    <li class="previous">
-        <a href="#">&larr; Older</a>
-    </li>
-    <li class="next">
-        <a href="#">Newer &rarr;</a>
-    </li>
-</ul>
+<!--<ul class="pager">-->
+    <!--<li class="previous">-->
+        <!--<a href="#">&larr; Older</a>-->
+    <!--</li>-->
+    <!--<li class="next">-->
+        <!--<a href="#">Newer &rarr;</a>-->
+    <!--</li>-->
+<!--</ul>-->
 
 <div class="row" ng-cloak>
     <table class="table table-striped table-bordered table-condensed">
@@ -62,7 +63,7 @@
             </th>
         </thead>
         <tbody>
-            <tr ng-repeat="item in items">
+            <tr ng-repeat="item in items | filter:filterText">
                 <td ng-repeat="field in ['datetime', 'source', 'type', 'message']" ng-click="redirectItem(item)">
                     {{item[field]}}
                 </td>
