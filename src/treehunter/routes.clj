@@ -31,7 +31,6 @@
              start (parse-date (:startdate params))
              end (parse-date (:enddate params))
              limit (read-string (or (:limit params) "1"))]
-         (println start " " end)
          (response (db/find-items-by-source source limit)))))
 
 (def ^:private root-dir {:root "public/app"})

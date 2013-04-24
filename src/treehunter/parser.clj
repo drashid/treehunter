@@ -18,6 +18,11 @@
 (def date-formatter (time/formatter (conf/path conf/parser :fields :datetime :format)))
 
 (defn- group-seq
+  "Group a sequence using the boolean operator provided
+   Example: (group-seq [true false false true false] #(not (identity %)))
+   Outputs: ((true false false) (true false))
+  
+   Evaluates semi-lazily (evaluates as far as it has to to hit the next non-grouped item)"
   [lst group-with-prev?]
     (lazy-seq 
       (let [next (first lst)
@@ -36,15 +41,18 @@
       (assoc result :parsed (rest parsed))
       (assoc result :body line))))
 
-(defn- to-word-freq [string]
+(defn- to-word-freq 
+  "String to word frequency map, split on any non-alphanumeric characters"
+  [string]
   (let [words (clojure.string/split (clojure.string/lower-case string) #"[^a-zA-Z0-9]+")]
    (reduce #(assoc % %2 (inc (% %2 0))) {} words)))
 
-(defn- take-top-by-freq [string n]
-  (map 
-   first 
+(defn- take-top-by-freq 
+  "Take the top n words by frequency from the given string"
+  [string n]
+  (map first 
    (take n 
-         ;; sort by count (higher first), and if equal counts by length (lower first)
+         ;; sort by count (higher first), and if equal then sort by length (lower first)
          (sort-by identity #(let [k1 (first %1) v1 (second %1)
                                   k2 (first %2) v2 (second %2)]
                               (if (= v1 v2)
@@ -52,7 +60,8 @@
                                 (> v1 v2))) (to-word-freq string)))))
 
 (defn- parse-log-groups 
-  "Parse grouped logs"
+  "Parse grouped logs into log entry map with fields:
+   datetime, type, source, message, exceptions, and signature"
   [group]
   (let [primary (:parsed (first group))
         fields (conf/parser :fields)
@@ -78,7 +87,11 @@
            (:source entry) "~"
            (clojure.string/join "-" (take-top-by-freq (:message entry) 5))))))
 
-(defn process-file-to-db [filename]
+(defn process-file-to-db 
+  "Process log file and write entries into the DB.  
+   Will read gzipped files if they end in .gz and 
+   updates file status via (set-file-status! ..) on start/stop/failure"
+  [filename]
   (println "Parsing file and contents to DB: " filename)
   (let [is (if (.endsWith filename ".gz")
              (java.util.zip.GZIPInputStream. (io/input-stream filename))
@@ -91,6 +104,6 @@
          (db/insert-logs! log-entries)
          (db/set-file-status! filename :completed)
          (catch Object _
-           (db/set-file-status! filename :failed)
+           (db/set-file-status! filename :failed) ;;TODO failure reason
            (throw+)))))))
 
