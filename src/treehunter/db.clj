@@ -23,7 +23,7 @@
   
 )
 
-(def ^:dynamic ^LogDao *dao* {})
+(def ^:dynamic ^LogDao *dao* nil)
 
 (defn set-dao! [dao] 
   (alter-var-root (var *dao*) (fn [_] (identity dao))))

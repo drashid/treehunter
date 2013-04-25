@@ -9,7 +9,8 @@
                  [clj-time "0.5.0"]
                  [com.novemberain/monger "1.5.0"]
                  [slingshot "0.10.3"]
-                 [ring/ring-jetty-adapter "1.1.0"]]
+                 [ring/ring-jetty-adapter "1.1.0"]
+                 [environ "0.4.0"]]
   :plugins [[lein-ring "0.8.2"]]
   :main treehunter.handler
   :aot [treehunter.handler]

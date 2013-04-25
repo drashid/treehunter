@@ -19,7 +19,7 @@
 ;;
 
 (defn db-service-init! [] 
-  (let [db (case (:type conf/db)
+  (let [db (case (conf/db :type)
               "mongo" (MongoDao.)
               (throw+ "Only 'mongo' is a valid Database type!"))]
     (do
@@ -30,7 +30,7 @@
 ;; Recurring job to search for and parse new logs
 ;;
 
-(def ^:private log-dir (:log-dir conf/parser))
+(def ^:private log-dir (conf/parser :log-dir))
 
 (defn- files-under 
   "Return the list of files under the given directory path."
@@ -61,5 +61,5 @@
                   (t/with-identity (t/key "triggers.filehunter"))
                   (t/start-now)
                   (t/with-schedule (schedule
-                                     (cron-schedule (:cron-schedule conf/parser)))))]
+                                     (cron-schedule (conf/parser :cron-schedule)))))]
     (qs/schedule job trigger)))
