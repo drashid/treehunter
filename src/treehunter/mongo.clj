@@ -9,14 +9,14 @@
             [monger.joda-time])
   (:import [org.bson.types ObjectId]))
 
-(def ^:private log-collection (conf/path conf/db :mongo :log-collection))
-(def ^:private log-status-collection (conf/path conf/db :mongo :files-collection))
-(def ^:private expire-days (days (conf/path conf/db :mongo :expire-in-days)))
+(def ^:private log-collection (conf/db :mongo :log-collection))
+(def ^:private log-status-collection (conf/db :mongo :files-collection))
+(def ^:private expire-days (days (conf/db :mongo :expire-in-days)))
 
 (defn- init-mongo! []
   (do
-    (mg/connect! (select-keys (:mongo conf/db) [:host :port]))
-    (mg/set-db! (mg/get-db (conf/path conf/db :mongo :db)))
+    (mg/connect! (select-keys (conf/db :mongo) [:host :port]))
+    (mg/set-db! (mg/get-db (conf/db :mongo :db)))
     (mc/ensure-index log-status-collection (array-map :filename 1) {:unique true})
     ;; TTL expiration 
     (let [now (now)

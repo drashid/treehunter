@@ -15,7 +15,7 @@
 (def line-regex (re-pattern (conf/parser :line-regex)))
 (def exception-regex (re-pattern (conf/parser :exception-regex)))
 
-(def date-formatter (time/formatter (conf/path conf/parser :fields :datetime :format)))
+(def date-formatter (time/formatter (conf/parser :fields :datetime :format)))
 
 (defn- group-seq
   "Group a sequence using the boolean operator provided
