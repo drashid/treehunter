@@ -98,7 +98,7 @@
              (io/input-stream filename))]
     (with-open [rdr (io/reader is)]
      (let [lines (line-seq rdr)
-           log-entries (map parse-log-groups (group-seq (map parse-line lines) #(not (:matched %))))]
+           log-entries (pmap parse-log-groups (group-seq (pmap parse-line lines) #(not (:matched %))))]
        (try+ 
          (db/set-file-status! filename :started)
          (db/insert-logs! log-entries)

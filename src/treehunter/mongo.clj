@@ -48,17 +48,12 @@
     (assoc mp k v)
     mp))
 
-(defn- build-query [{:keys [source start end type]
-                     :or {source nil
-                          type nil
-                          start nil 
-                          end nil}}]
+(defn- build-query [{:keys [source start end type]}]
   (let [date-q {:datetime {$gte (or start (from-long 0)) 
                            $lte (or end (now))}}]
         (assoc-if 
          (assoc-if date-q :source source) 
          :type type)))
-
 
 (defn- find-items [limit constraints]
   (let [find-q (build-query constraints)

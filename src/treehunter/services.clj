@@ -42,9 +42,9 @@
     (println "Scanning files under directory " log-dir)
     (try
      (dorun 
-      (map #(if (db/file-processing-started? %)               
-              (println (str "Skipping " %))
-              (parser/process-file-to-db %))
+      (pmap #(if (db/file-processing-started? %)               
+               (println (str "Skipping " %))
+               (parser/process-file-to-db %))
            files))
      (catch Exception e
        (println "EXCEPTION PROCESSING LOGS: " (.getMessage e))
