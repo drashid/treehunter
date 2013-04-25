@@ -13,15 +13,14 @@
   (set-file-status! [this filename status])
   (insert-logs! [this item-list])
   
+  ;; query
+  
   ;; Returns something of the form:
   ;;  {'sourceA' [{'count' N 
   ;;               'type' 'INFO|ERROR|...' 
   ;;               'source' 'sourceA'}, ...] ...}
   (find-counts-by-source-type [this])
-  
-  (find-items-by-source [this source-class limit])
-  
-)
+  (find-items [this limit constraints]))
 
 (def ^:dynamic ^LogDao *dao* nil)
 
@@ -38,4 +37,4 @@
 
 (defn find-counts-by-source-type [] (find-counts-by-source-type *dao*))
 
-(defn find-items-by-source [source-class limit] (find-items-by-source *dao* source-class limit))
+(defn find-items [limit constraints] (find-items *dao* limit constraints))

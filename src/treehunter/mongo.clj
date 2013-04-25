@@ -1,5 +1,6 @@
 (ns treehunter.mongo
   (:use [clj-time.core :only [now in-secs days minus interval]]
+        [clj-time.coerce :only [from-long]]
         [monger.operators])
   (:require [treehunter.config :as conf]
             [monger.core :as mg]
@@ -42,12 +43,31 @@
 (defn- id-to-string [item]
   (assoc item :_id (.toString (:_id item))))
 
-(defn- find-by-source [source-class limit]
-  (map id-to-string
-   (query/with-collection log-collection
-    (query/find {:source source-class})                     
-    (query/sort {:datetime -1})
-    (query/limit limit))))
+(defn- assoc-if [mp k v]
+  (if v 
+    (assoc mp k v)
+    mp))
+
+(defn- build-query [{:keys [source start end type]
+                     :or {source nil
+                          type nil
+                          start nil 
+                          end nil}}]
+  (let [date-q {:datetime {$gte (or start (from-long 0)) 
+                           $lte (or end (now))}}]
+        (assoc-if 
+         (assoc-if date-q :source source) 
+         :type type)))
+
+
+(defn- find-items [limit constraints]
+  (let [find-q (build-query constraints)
+        _ (println "Find Query: " find-q)]
+    (map id-to-string
+     (query/with-collection log-collection
+      (query/find find-q)
+      (query/sort {:datetime -1})
+      (query/limit limit)))))
 
 ;
 ; Query to get the first example for a given signature with the aggregation framework
@@ -65,7 +85,7 @@
   
   ;; lookup
   (find-counts-by-source-type [this] (find-grouped-counts))
-  (find-items-by-source [this source-class limit] (find-by-source source-class limit))
+  (find-items [this limit constraints] (find-items limit constraints))
 )
 
 

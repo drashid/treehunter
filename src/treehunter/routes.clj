@@ -30,8 +30,13 @@
        (let [source (:source params)
              start (parse-date (:startdate params))
              end (parse-date (:enddate params))
-             limit (read-string (or (:limit params) "1"))]
-         (response (db/find-items-by-source source limit)))))
+             limit (read-string (or (:limit params) "1"))
+             type (:type params)]
+         (response (db/find-items limit 
+                                  {:source source
+                                   :start start
+                                   :end end
+                                   :type type})))))
 
 (def ^:private root-dir {:root "public/app"})
 
