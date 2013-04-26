@@ -1,9 +1,13 @@
 (ns treehunter.config
-  (:use [environ.core :only [env]])
-  (:require [clj-yaml.core :as yaml]))
+  (:use [environ.core :only [env]]
+        [slingshot.slingshot :only [throw+]])
+  (:require [clj-yaml.core :as yaml])
+  (:import [org.apache.commons.io FilenameUtils]))
 
-(def ^:private config 
-  (let [config-file (or (env :config-file) "resources/config.yaml")
+(defonce ^:private config 
+  (let [config-file (or (env :config-file) 
+                        (FilenameUtils/concat (env "TREEHUNTER_HOME") "config.yaml")
+                        "config.yaml")
         _ (println "Loading config file " config-file)]
     (yaml/parse-string (slurp config-file))))
 
@@ -21,5 +25,3 @@
 (defn db 
   ([] (:db config))
   ([& p] (apply path (cons (db) p))))
-
-

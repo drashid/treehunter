@@ -10,7 +10,8 @@
                  [com.novemberain/monger "1.5.0"]
                  [slingshot "0.10.3"]
                  [ring/ring-jetty-adapter "1.1.0"]
-                 [environ "0.4.0"]]
+                 [environ "0.4.0"]
+                 [commons-io/commons-io "2.4"]]
   :plugins [[lein-ring "0.8.2"]]
   :main treehunter.handler
   :aot [treehunter.handler]
