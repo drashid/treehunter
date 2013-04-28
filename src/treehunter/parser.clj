@@ -1,6 +1,7 @@
 (ns treehunter.parser
   (:use [clojurewerkz.quartzite.jobs :only [defjob]]
-        [slingshot.slingshot :only [throw+ try+]])
+        [slingshot.slingshot :only [throw+ try+]]
+        [treehunter.util :only [to-word-freq group-seq]])
   (:require [clojurewerkz.quartzite.scheduler :as qs]
             [treehunter.config :as conf]
             [clj-time.format :as time]
@@ -17,21 +18,6 @@
 
 (def date-formatter (time/formatter (conf/parser :fields :datetime :format)))
 
-(defn- group-seq
-  "Group a sequence using the boolean operator provided
-   Example: (group-seq [true false false true false] #(not (identity %)))
-   Outputs: ((true false false) (true false))
-  
-   Evaluates semi-lazily (evaluates as far as it has to to hit the next non-grouped item)"
-  [lst group-with-prev?]
-    (lazy-seq 
-      (let [next (first lst)
-            grouped (or (take-while #(group-with-prev? %) (rest lst)) [])]
-        (if (nil? next)
-          lst
-          (cons (cons next grouped) 
-                (group-seq (drop (count grouped) (rest lst)) group-with-prev?))))))
-
 (defn- parse-line 
   "Parse single line (potentially may be a non-primary line which will be grouped)"
   [line]
@@ -40,12 +26,6 @@
     (if (:matched result)
       (assoc result :parsed (rest parsed))
       (assoc result :body line))))
-
-(defn- to-word-freq 
-  "String to word frequency map, split on any non-alphanumeric characters"
-  [string]
-  (let [words (clojure.string/split (clojure.string/lower-case string) #"[^a-zA-Z0-9]+")]
-   (reduce #(assoc % %2 (inc (% %2 0))) {} words)))
 
 (defn- take-top-by-freq 
   "Take the top n words by frequency from the given string"

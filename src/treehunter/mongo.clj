@@ -1,7 +1,8 @@
 (ns treehunter.mongo
   (:use [clj-time.core :only [now in-secs days minus interval]]
         [clj-time.coerce :only [from-long]]
-        [monger.operators])
+        [monger.operators]
+        [treehunter.util :only [objectid-to-string assoc-if]])
   (:require [treehunter.config :as conf]
             [monger.core :as mg]
             [monger.collection :as mc]
@@ -40,25 +41,18 @@
      (group-by #(:source %)
        (map #(assoc (:_id %) :count (:count %)) q-result))))
 
-(defn- id-to-string [item]
-  (assoc item :_id (.toString (:_id item))))
-
-(defn- assoc-if [mp k v]
-  (if v 
-    (assoc mp k v)
-    mp))
+(defn- build-date-query-part [start end]
+  {:datetime {$gte (or start (from-long 0)) 
+              $lte (or end (now))}})
 
 (defn- build-query [{:keys [source start end type]}]
-  (let [date-q {:datetime {$gte (or start (from-long 0)) 
-                           $lte (or end (now))}}]
-        (assoc-if 
-         (assoc-if date-q :source source) 
-         :type type)))
+  (let [date-q (build-date-query-part start end)]
+    (assoc-if date-q :source source :type type)))
 
 (defn- find-items [limit constraints]
   (let [find-q (build-query constraints)
         _ (println "Find Query: " find-q)]
-    (map id-to-string
+    (map objectid-to-string
      (query/with-collection log-collection
       (query/find find-q)
       (query/sort {:datetime -1})
