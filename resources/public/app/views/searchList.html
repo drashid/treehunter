@@ -58,14 +58,14 @@
 <div class="row" ng-cloak>
     <table class="table table-striped table-bordered table-condensed">
         <thead>
-            <th ng-repeat="field in ['date', 'source', 'type', 'message']">
+            <th ng-repeat="field in ['date', 'type', 'message']">
                 {{field}}
             </th>
         </thead>
         <tbody>
             <tr ng-repeat="item in items | filter:filterText">
-                <td ng-repeat="field in ['datetime', 'source', 'type', 'message']" ng-click="redirectItem(item)">
-                    {{item[field]}}
+                <td ng-repeat="field in ['datetime', 'type', 'message']" ng-click="redirectItem(item)">
+                    {{item[field] | truncate:200}}
                 </td>
             </tr>
         </tbody>
