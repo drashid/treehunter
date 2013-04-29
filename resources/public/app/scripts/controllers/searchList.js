@@ -5,6 +5,18 @@ angular.module('publicApp')
 
 	var defaultLimit = 100;
 
+	function parseWords(messages){
+		var words = {};
+		_.each(messages, function(message){
+			var pieces = message.split(/[^0-9A-Za-z]/);
+			_.each(pieces, function(piece){
+				words[piece] = 1;
+			});
+		});
+
+		return _.keys(words);
+	}
+
 	function searchRequest(params){
 		$http({
 			url: "/api/search",
@@ -12,6 +24,7 @@ angular.module('publicApp')
 			params: params
 		}).success(function(data){
 			$scope.items = data;
+			$scope.words = parseWords(_.pluck($scope.items, 'message'));
 		}).error(function(){
 			// TODO
 		});

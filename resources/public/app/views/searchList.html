@@ -2,7 +2,8 @@
 <div class="navbar navbar-fixed-top">
     <div class="navbar-inner">
         <form class="small-margin-left navbar-search pull-left">
-            <input type="text" class="search-query" placeholder="Filter" ng-model="filterText">
+            <input type="text" class="search-query" placeholder="Filter" ng-model="filterText"
+                   typeahead="word for word in words | filter:$viewValue">
         </form>
     </div>
 </div>
